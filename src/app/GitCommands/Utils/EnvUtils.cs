@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
 namespace GitCommands.Utils
@@ -67,6 +68,26 @@ namespace GitCommands.Utils
         public static bool RunningOnMacOSX()
         {
             return Environment.OSVersion.Platform == PlatformID.MacOSX;
+        }
+
+        /// <summary>
+        /// Determines if the application is running on macOS.
+        /// This method provides a more reliable detection than RunningOnMacOSX() 
+        /// as it also checks for Unix with macOS-specific characteristics.
+        /// </summary>
+        public static bool RunningOnMacOS()
+        {
+            return Environment.OSVersion.Platform == PlatformID.MacOSX ||
+                   (Environment.OSVersion.Platform == PlatformID.Unix && 
+                    RuntimeInformation.IsOSPlatform(OSPlatform.OSX));
+        }
+
+        /// <summary>
+        /// Determines if the application is running on a Unix-like system (Linux, macOS, etc.).
+        /// </summary>
+        public static bool RunningOnUnixLike()
+        {
+            return RunningOnUnix() || RunningOnMacOS();
         }
 
         public static bool IsNet4FullOrHigher()

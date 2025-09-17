@@ -1,4 +1,6 @@
-﻿namespace GitCommands
+﻿using GitCommands.Utils;
+
+namespace GitCommands
 {
     public static class OsShellUtil
     {
@@ -24,13 +26,43 @@
         /// <param name="filePath">Pathname of the file to open.</param>
         public static void OpenAs(string filePath)
         {
-            // filePath must not be quoted
-            new Executable("rundll32.exe").Start("shell32.dll,OpenAs_RunDLL " + filePath, redirectOutput: true, outputEncoding: System.Text.Encoding.UTF8);
+            if (EnvUtils.RunningOnMacOS())
+            {
+                // On macOS, use the 'open' command with the -a flag to let user choose application
+                new Executable("open").Start($"-a 'Choose Application' '{filePath}'", throwOnErrorExit: false);
+            }
+            else
+            {
+                // filePath must not be quoted on Windows
+                new Executable("rundll32.exe").Start("shell32.dll,OpenAs_RunDLL " + filePath, redirectOutput: true, outputEncoding: System.Text.Encoding.UTF8);
+            }
         }
 
-        public static void SelectPathInFileExplorer(string filePath) => OpenWithFileExplorer($"/select, {filePath.Quote()}", quote: false);
+        public static void SelectPathInFileExplorer(string filePath)
+        {
+            if (EnvUtils.RunningOnMacOS())
+            {
+                // On macOS, use 'open -R' to reveal file in Finder
+                new Executable("open").Start($"-R '{filePath}'", throwOnErrorExit: false);
+            }
+            else
+            {
+                OpenWithFileExplorer($"/select, {filePath.Quote()}", quote: false);
+            }
+        }
 
-        public static void OpenWithFileExplorer(string arguments, bool quote = true) => new Executable("explorer.exe").Start(quote ? arguments.Quote() : arguments);
+        public static void OpenWithFileExplorer(string arguments, bool quote = true)
+        {
+            if (EnvUtils.RunningOnMacOS())
+            {
+                // On macOS, open Finder with the given path
+                new Executable("open").Start(quote ? arguments.Quote() : arguments, throwOnErrorExit: false);
+            }
+            else
+            {
+                new Executable("explorer.exe").Start(quote ? arguments.Quote() : arguments);
+            }
+        }
 
         public static void OpenUrlInDefaultBrowser(string? url)
         {

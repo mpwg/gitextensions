@@ -35,7 +35,8 @@ namespace GitExtensions
                 Application.ThreadException += (s, e) => BugReportInvoker.Report(e.Exception, isTerminating: false);
             }
 
-            if (Environment.OSVersion.Version.Major >= 6)
+            // Windows-specific DPI awareness - not needed on macOS
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major >= 6)
             {
                 SetProcessDPIAware();
             }
