@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  macOS Build Configuration Example
+  This demonstrates how to configure builds for macOS compatibility
+  by excluding Windows-specific components and dependencies.
+-->
+<Project>
+  <PropertyGroup>
+    <!-- macOS-specific build settings -->
+    <DefineConstants Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">$(DefineConstants);MACOS_BUILD</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Exclude Windows-specific native projects on macOS -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">
+    <!-- These native Windows components should be excluded from macOS builds -->
+    <!--
+    <ProjectReference Remove="..\native\GitExtSshAskPass\GitExtSshAskPass.vcxproj" />
+    <ProjectReference Remove="..\native\GitExtensionsShellEx\GitExtensionsShellEx.vcxproj" />
+    -->
+  </ItemGroup>
+
+  <!-- Windows-specific package references that might need alternatives or removal on macOS -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64' OR '$(RuntimeIdentifier)' == 'win-x86'">
+    <!-- Example: Windows-specific packages could be conditionally included -->
+    <PackageReference Include="Microsoft.WindowsAPICodePack.Shell" />
+    <PackageReference Include="Microsoft.WindowsAPICodePack.Core" />
+  </ItemGroup>
+
+  <!-- macOS-specific package references -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">
+    <!-- Future: Add macOS-specific packages here if needed -->
+    <!-- <PackageReference Include="macOS-specific-package" /> -->
+  </ItemGroup>
+
+  <!-- Compile-time constants for platform detection -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">
+    <DefineConstants>$(DefineConstants);MACOS</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'win-x64' OR '$(RuntimeIdentifier)' == 'win-x86'">
+    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+  </PropertyGroup>
+
+  <!-- macOS-specific output settings -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">
+    <!-- macOS applications typically don't have .exe extension -->
+    <AssemblyName>GitExtensions</AssemblyName>
+    <ApplicationIcon Condition="'$(ApplicationIcon)' == ''">../../../setup/assets/Logo/git-extensions-logo.icns</ApplicationIcon>
+  </PropertyGroup>
+
+  <!-- Build targets for macOS -->
+  <Target Name="CreateMacOSAppBundle" AfterTargets="PublishMacOS" Condition="'$(RuntimeIdentifier)' == 'osx-x64' OR '$(RuntimeIdentifier)' == 'osx-arm64'">
+    <Message Text="Creating macOS app bundle..." Importance="high" />
+    <!-- Future: Create .app bundle structure for macOS -->
+  </Target>
+
+</Project>

@@ -96,6 +96,13 @@ namespace GitUI
 
         private static unsafe int CalculateVerticalScrollBarWidth(ComboBox comboBox)
         {
+            // Win32 API calls are only available on Windows
+            if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+            {
+                // On non-Windows platforms, return the system default or zero
+                return SystemInformation.VerticalScrollBarWidth;
+            }
+
             NativeMethods.COMBOBOXINFO cboInfo = new() { cbSize = (uint)sizeof(NativeMethods.COMBOBOXINFO) };
 
             if (NativeMethods.GetComboBoxInfo(comboBox.Handle, &cboInfo) != Interop.BOOL.TRUE)
