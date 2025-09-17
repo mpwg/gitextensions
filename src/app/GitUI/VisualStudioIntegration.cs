@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using EnvDTE;
 using GitCommands;
+using GitCommands.Utils;
 using GitExtensions.Extensibility;
 using Microsoft.VisualStudio.Threading;
 
@@ -15,6 +16,12 @@ namespace GitUI
 
         static VisualStudioIntegration()
         {
+            // Visual Studio integration is only available on Windows
+            if (!EnvUtils.RunningOnWindows())
+            {
+                return;
+            }
+
             ThreadHelper.FileAndForget(async () =>
             {
                 string vswhere = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)}\Microsoft Visual Studio\Installer\vswhere.exe";
@@ -40,6 +47,12 @@ namespace GitUI
 
         public static void OpenFile(string filePath, int lineNumber = 0)
         {
+            // Visual Studio integration is only available on Windows
+            if (!EnvUtils.RunningOnWindows())
+            {
+                return;
+            }
+
             ThreadHelper.FileAndForget(async () =>
             {
                 while (true)
