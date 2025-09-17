@@ -7,9 +7,16 @@ namespace GitExtUtils.GitUI
     {
         /// <summary>
         /// Replaces some .NET Framework 96-dpi .cur file mouse cursors with system cursors.
+        /// Only available on Windows.
         /// </summary>
         public static void Enable()
         {
+            // Only apply Windows-specific cursor fixes on Windows
+            if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+            {
+                return;
+            }
+
             try
             {
                 SetCursor("hand", IDC.HAND);

@@ -93,22 +93,29 @@ public static bool RunningOnUnix()
 
 ## Implementation Plan
 
-### Phase 1: Platform Detection Foundation
-1. **Enhance EnvUtils.cs**
+### Phase 1: Platform Detection Foundation ✅
+1. **Enhanced EnvUtils.cs** ✅
    ```csharp
    public static bool RunningOnMacOS() 
-   public static MacOSVersion GetMacOSVersion()
-   public static bool SupportsNativeMenus() // for future native menu integration
+   public static bool RunningOnUnixLike()
    ```
 
-2. **Update Program.cs entry point**
+2. **Updated Program.cs entry point** ✅
    ```csharp
-   if (EnvUtils.RunningOnWindows())
+   // Windows-specific DPI awareness - not needed on macOS
+   if (Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major >= 6)
    {
-       WebBrowserEmulationMode.SetBrowserFeatureControl();
-       FormFixHome.CheckHomePath();
+       SetProcessDPIAware();
    }
    ```
+
+3. **Added macOS support to file operations** ✅
+   - Enhanced `OsShellUtil.cs` with `open` command support for macOS
+   - Cross-platform file selection and Finder integration
+
+4. **Disabled Windows-specific integrations** ✅
+   - Visual Studio Integration disabled on non-Windows platforms
+   - High DPI mouse cursors only applied on Windows
 
 ### Phase 2: Disable Windows-Specific Features
 1. **Visual Studio Integration**
